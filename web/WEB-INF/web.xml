@@ -12,6 +12,7 @@
         <jsp-property-group>
             <display-name>template</display-name>
             <url-pattern>/listShoes.jsp</url-pattern>
+            <url-pattern>/WEB-INF/addModel.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
             <include-prelude>/WEB-INF/jspf/header.jspf</include-prelude>
             <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>
