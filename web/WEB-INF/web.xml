@@ -11,6 +11,7 @@
     <jsp-config>
         <jsp-property-group>
             <display-name>template</display-name>
+            <url-pattern>/showLogin.jsp</url-pattern>
             <url-pattern>/listShoes.jsp</url-pattern>
             <url-pattern>/WEB-INF/addModel.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>

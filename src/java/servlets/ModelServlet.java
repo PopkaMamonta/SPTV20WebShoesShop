@@ -45,16 +45,16 @@ public class ModelServlet extends HttpServlet {
         HttpSession session=request.getSession(false);
         if(session==null){
             request.setAttribute("info", "Авторизуйтесь!");
-            request.getRequestDispatcher(/showLogin).forward(request,response);
+            request.getRequestDispatcher("/showLogin").forward(request,response);
         }
-        Person authPerson = (Person) session.getAttribute("authPerson");
-        if(authPerson==null){
+        Person authUser = (Person) session.getAttribute("authUser");
+        if(authUser==null){
             request.setAttribute("info", "Авторизуйтесь!");
-            request.getRequestDispatcher(/showLogin).forward(request,response);
+            request.getRequestDispatcher("/showLogin").forward(request,response);
         }
-        if(!rolePersonFacade.isRole("MANAGER",authPerson)){
+        if(!rolePersonFacade.isRole("MANAGER",authUser)){
             request.setAttribute("info", "Авторизуйтесь!");
-            request.getRequestDispatcher(/showLogin).forward(request,response);
+            request.getRequestDispatcher("/showLogin").forward(request,response);
         }
         String path=request.getServletPath();
         switch(path){

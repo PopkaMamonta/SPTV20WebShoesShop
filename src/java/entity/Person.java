@@ -25,6 +25,7 @@ public class Person implements Serializable{
     private Long id;
     private String login;
     private String password;
+    private String salt;
     @OneToOne
     private User user;
 
@@ -101,6 +102,14 @@ public class Person implements Serializable{
     @Override
     public String toString() {
         return "Person{" + "id=" + id + ", login=" + login + ", password=" + password + ", user=" + user + '}';
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
     
 }

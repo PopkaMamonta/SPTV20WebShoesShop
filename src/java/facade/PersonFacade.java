@@ -29,4 +29,15 @@ public class PersonFacade extends AbstractFacade<Person> {
         super(Person.class);
     }
     
+    public Person findByLogin(String login){
+        try{
+            return (Person)em.createQuery("SELECT p FROM Person p WHERE p.login = :login")
+                    .setParameter("login", login)
+                    .getSingleResult();
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+    
 }
