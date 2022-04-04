@@ -5,7 +5,7 @@
  */
 package facade;
 
-import entity.Model;
+import entity.Cover;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
  * @author angel
  */
 @Stateless
-public class ModelFacade extends AbstractFacade<Model> {
+public class CoverFacade extends AbstractFacade<Cover> {
 
     @PersistenceContext(unitName = "WebShoesLibraryPU")
     private EntityManager em;
@@ -25,8 +25,8 @@ public class ModelFacade extends AbstractFacade<Model> {
         return em;
     }
 
-    public ModelFacade() {
-        super(Model.class);
+    public CoverFacade() {
+        super(Cover.class);
     }
     
 }

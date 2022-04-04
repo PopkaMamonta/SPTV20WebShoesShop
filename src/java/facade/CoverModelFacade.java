@@ -5,7 +5,9 @@
  */
 package facade;
 
+import entity.CoverModel;
 import entity.Model;
+import java.awt.print.Book;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author angel
  */
 @Stateless
-public class ModelFacade extends AbstractFacade<Model> {
+public class CoverModelFacade extends AbstractFacade<CoverModel> {
 
     @PersistenceContext(unitName = "WebShoesLibraryPU")
     private EntityManager em;
@@ -25,8 +27,18 @@ public class ModelFacade extends AbstractFacade<Model> {
         return em;
     }
 
-    public ModelFacade() {
-        super(Model.class);
+    public CoverModelFacade() {
+        super(CoverModel.class);
+    }
+    
+        public CoverModel findCoverByModel(Model model) {
+        try {
+            return (CoverModel) em.createQuery("SELECT cm FROM CoverModel cm WHERE cm.model=:model")
+                    .setParameter("model", model)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return new CoverModel();
+        }
     }
     
 }

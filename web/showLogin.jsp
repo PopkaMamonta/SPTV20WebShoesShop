@@ -31,5 +31,6 @@
         </div>
       </div>
       <button type="submit" class="btn btn-primary">Войти</button>
+      <h4 class="w-100 mt-3 text-center"><a href="showRegistration">Зарегистрироваться</a></h4>
     </form>
 </div>

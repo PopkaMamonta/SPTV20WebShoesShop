@@ -24,7 +24,7 @@ public class RolePerson implements Serializable{
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     @OneToOne(cascade=CascadeType.DETACH)
-    private User user;
+    private Person person;
     @OneToOne(cascade=CascadeType.DETACH)
     private Role role;
 
@@ -36,12 +36,12 @@ public class RolePerson implements Serializable{
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     public Role getRole() {
@@ -56,7 +56,7 @@ public class RolePerson implements Serializable{
     public int hashCode() {
         int hash = 7;
         hash = 47 * hash + Objects.hashCode(this.id);
-        hash = 47 * hash + Objects.hashCode(this.user);
+        hash = 47 * hash + Objects.hashCode(this.person);
         hash = 47 * hash + Objects.hashCode(this.role);
         return hash;
     }
@@ -75,7 +75,7 @@ public class RolePerson implements Serializable{
         if (!Objects.equals(this.id, other.id)){
             return false;
         }
-        if (!Objects.equals(this.user, other.user)){
+        if (!Objects.equals(this.person, other.person)){
             return false;
         }
         if (!Objects.equals(this.role, other.role)){
@@ -87,7 +87,7 @@ public class RolePerson implements Serializable{
     
     @Override
     public String toString() {
-        return "RolePerson{" + "id=" + id + ", user=" + user + ", role=" + role + '}';
+        return "RolePerson{" + "id=" + id + ", user=" + person + ", role=" + role + '}';
     }
     
     

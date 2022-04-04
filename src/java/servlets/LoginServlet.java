@@ -5,18 +5,23 @@
  */
 package servlets;
 
+import entity.Cover;
+import entity.CoverModel;
 import entity.Model;
 import entity.Person;
 import entity.Role;
 import entity.RolePerson;
 import entity.User;
+import facade.CoverModelFacade;
 import facade.ModelFacade;
 import facade.PersonFacade;
 import facade.RoleFacade;
 import facade.RolePersonFacade;
 import facade.UserFacade;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,10 +39,14 @@ import tools.PasswordProtected;
     "/showLogin",
     "/login",
     "/logout",
+    "/listShoes",
+    "/showRegistration",
+    "/registration"
     
     
 })
 public class LoginServlet extends HttpServlet {
+    @EJB private CoverModelFacade coverModelFacade;
     @EJB private ModelFacade modelFacade;
     @EJB private PersonFacade personFacade;
     @EJB private RoleFacade roleFacade;
@@ -64,25 +73,25 @@ public class LoginServlet extends HttpServlet {
         person.setUser(user);
         personFacade.create(person);
         Role role =new Role();
-        role.setRoleName("READER");
+        role.setRoleName("USER");
         roleFacade.create(role);
         RolePerson rolePerson=new RolePerson();
         rolePerson.setRole(role);
-        rolePerson.setUser(user);
+        rolePerson.setPerson(person);
         rolePersonFacade.create(rolePerson);
         role= new Role();
         role.setRoleName("MANAGER");
         roleFacade.create(role);
         rolePerson=new RolePerson();
         rolePerson.setRole(role);
-        rolePerson.setUser(user);
+        rolePerson.setPerson(person);
         rolePersonFacade.create(rolePerson);
         role= new Role();
         role.setRoleName("ADMINISTRATOR");
         roleFacade.create(role);
         rolePerson=new RolePerson();
         rolePerson.setRole(role);
-        rolePerson.setUser(user);
+        rolePerson.setPerson(person);
         rolePersonFacade.create(rolePerson);
     }
     /**
@@ -103,26 +112,27 @@ public class LoginServlet extends HttpServlet {
             case "/showLogin":
                 request.setAttribute("activeShowLogin", true);
                 request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                break;
             case "/login":
                 String login=request.getParameter("login");
                 String password=request.getParameter("password");
-                Person authUser=personFacade.findByLogin(login);
-                if(authUser==null){
+                Person authPerson=personFacade.findByLogin(login);
+                if(authPerson==null){
                 request.setAttribute("info", "Неверный логин или пароль");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
                 }
                 PasswordProtected pp=new PasswordProtected();
-                String salt=authUser.getSalt();
+                String salt=authPerson.getSalt();
                 String sequrePassword=pp.passwordEncript(password, salt);
-                if(!sequrePassword.equals(authUser.getPassword())){
+                if(!sequrePassword.equals(authPerson.getPassword())){
                 request.setAttribute("info", "Неверный логин или пароль");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
                 }
                 HttpSession session=request.getSession(true);
-                session.setAttribute("authUser",authUser);
-                String topRoleAuthUser=rolePersonFacade.getTopRole(authUser);
-                session.setAttribute("topRole", topRoleAuthUser);
-                request.setAttribute("info","Здраствуйте"+ authUser.getUser().getName());
+                session.setAttribute("authPerson",authPerson);
+                String topRoleAuthPerson=rolePersonFacade.getTopRole(authPerson);
+                session.setAttribute("topRole", topRoleAuthPerson);
+                request.setAttribute("info","Здраствуйте"+ authPerson.getUser().getName());
                 request.getRequestDispatcher("/listShoes").forward(request, response);
                 break;
             case "/logout":
@@ -135,9 +145,83 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/listShoes").forward(request, response);
                 break;
             case "/listShoes":
+                Map<Model,Cover> mapModels = new HashMap<>();
+                List<Model> models = modelFacade.findAll();
+                for(Model m : models){
+                    CoverModel coverModel = coverModelFacade.findCoverByModel(m);
+                    mapModels.put(m, coverModel.getCover());
+                }
+                request.setAttribute("mapBooks", mapModels);
                 request.setAttribute("activeListShoes", true);
                 request.getRequestDispatcher("/listShoes.jsp").forward(request, response);
                 break;
+                
+            case "/showRegistration":
+                request.getRequestDispatcher("/showRegistration.jsp").forward(request, response);
+                break;
+            case "/registration":
+                String firstname = request.getParameter("firstname");
+                String lastname = request.getParameter("lastname");
+                String phone = request.getParameter("phone");
+                login = request.getParameter("login");
+                String password1 = request.getParameter("password1");
+                String password2 = request.getParameter("password2");
+                if(!password1.equals(password2)){
+                    request.setAttribute("firstname", firstname);
+                    request.setAttribute("lastname", lastname);
+                    request.setAttribute("phone", phone);
+                    request.setAttribute("login", login);
+                    request.setAttribute("info", "Не совпадают пароли");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
+                if("".equals(firstname) 
+                        || "".equals(lastname)
+                        || "".equals(phone)
+                        || "".equals(login)
+                        || "".equals(password1)
+                        || "".equals(password2)
+                        ){
+                    request.setAttribute("firstname", firstname);
+                    request.setAttribute("lastname", lastname);
+                    request.setAttribute("phone", phone);
+                    request.setAttribute("login", login);
+                    request.setAttribute("info", "Заполните все поля");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
+                User user = new User();
+                user.setName(firstname);
+                user.setSurname(lastname);
+                user.setTel(phone);
+                userFacade.create(user);
+                Person person = new Person();
+                person.setLogin(login);
+                pp = new PasswordProtected();
+                salt = pp.getSalt();
+                person.setSalt(salt);
+                sequrePassword = pp.passwordEncript(password1, salt);
+                person.setPassword(sequrePassword);
+                person.setUser(user);
+                personFacade.create(person);
+                
+                Role readerRole = roleFacade.findByRoleName("USER");
+                if(readerRole == null){
+                    request.setAttribute("firstname", firstname);
+                    request.setAttribute("lastname", lastname);
+                    request.setAttribute("phone", phone);
+                    request.setAttribute("login", login);
+                    request.setAttribute("info", "Не найдена роль!");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
+                RolePerson rolePerson = new RolePerson();
+                rolePerson.setRole(readerRole);
+                rolePerson.setPerson(person);
+                rolePersonFacade.create(rolePerson);
+                request.setAttribute("info", "Добавлен новый пользователь");
+                request.getRequestDispatcher("/listShoes").forward(request, response);
+                break;      
         }
         
     }
