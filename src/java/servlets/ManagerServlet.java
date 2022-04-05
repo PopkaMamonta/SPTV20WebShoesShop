@@ -6,9 +6,11 @@
 package servlets;
 
 import entity.Cover;
+import entity.CoverModel;
 import entity.Model;
 import entity.Person;
 import facade.CoverFacade;
+import facade.CoverModelFacade;
 import facade.ModelFacade;
 import facade.RolePersonFacade;
 import java.io.File;
@@ -20,14 +22,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import static jdk.nashorn.internal.objects.NativeError.getFileName;
-
 /**
  *
  * @author user
@@ -35,9 +36,12 @@ import static jdk.nashorn.internal.objects.NativeError.getFileName;
 @WebServlet(name = "ManagerServlet", urlPatterns = {
     "/addModel",
     "/createModel",
+    "/showUploadCover",
     "/uploadCover"
 })
+@MultipartConfig
 public class ManagerServlet extends HttpServlet {
+    @EJB private CoverModelFacade coverModelFacade;
     @EJB private ModelFacade modelFacade;
     @EJB private RolePersonFacade rolePersonFacade;
     @EJB private CoverFacade coverFacade;
@@ -70,7 +74,7 @@ public class ManagerServlet extends HttpServlet {
         }
         request.setAttribute("topRole", session.getAttribute("topRole"));
         String path=request.getServletPath();
-        String uploadFolder = "F:\\UploadDir\\SPTV20WebShoesShop";
+        String uploadFolder = "D:\\UploadDir\\SPTV20WebShoesShop";
         switch(path){
             case "/addModel":
                 request.setAttribute("activeAddModel", true);
@@ -84,7 +88,8 @@ public class ManagerServlet extends HttpServlet {
                 String modelPrice = request.getParameter("price");
                 String modelQuantity = request.getParameter("quantity");
                 String modelSize = request.getParameter("size");
-                if("".equals(modelName) || "".equals(brandModel) || "".equals(modelPrice) || "".equals(modelQuantity) || "".equals(modelSize)){
+                String coverId = request.getParameter("coverId");
+                if("".equals(modelName) || "".equals(brandModel) || "".equals(modelPrice) || "".equals(modelQuantity) || "".equals(modelSize) || "".equals(coverId)){
                     request.setAttribute("model", modelName);
                     request.setAttribute("brand", brandModel);
                     request.setAttribute("price", modelPrice);
@@ -110,6 +115,21 @@ public class ManagerServlet extends HttpServlet {
                     request.getRequestDispatcher("/addModel").forward(request, response);
                     break;
                 }
+                modelFacade.create(model);
+                Cover selectedCover =coverFacade.find(Long.parseLong(coverId));
+                CoverModel coverModel=new CoverModel();
+                coverModel.setModel(model);
+                coverModel.setCover(selectedCover);
+                coverModelFacade.create(coverModel);
+                request.setAttribute("info", "Обувь добавлена");
+                request.getRequestDispatcher("/listShoes").forward(request, response);
+                break;
+            case "/showUploadCover":
+                request.setAttribute("activeShowUploadCover", true);
+                request.getRequestDispatcher("/WEB-INF/showUploadCover.jsp").forward(request, response);
+                break;
+            case "/uploadCover":
+                try {
                 List<Part> fileParts = request.getParts().stream().filter(
                         part -> "file".equals(part.getName()))
                     .collect(Collectors.toList());
@@ -127,10 +147,14 @@ public class ManagerServlet extends HttpServlet {
                 cover.setDescription(description);
                 cover.setFileName(sb.toString());
                 coverFacade.create(cover);
-                modelFacade.create(model);
-                request.setAttribute("info", "Обувь добавлена");
-                request.getRequestDispatcher("/listShoes").forward(request, response);
+                request.setAttribute("info", "Файл успешно загружен");
+                request.getRequestDispatcher("/addModel").forward(request, response);  
+                } catch (Exception e) {
+                request.setAttribute("info", "Файл гандон");
+                request.getRequestDispatcher("/showUploadCover").forward(request, response);  
+                }
                 break;
+           
         }
     }
 
@@ -172,5 +196,18 @@ public class ManagerServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private String getFileName(Part part) {
+        final String partHeader=part.getHeader("content-disposition");
+        for(String content : part.getHeader("content-disposition").split(";")){
+            if (content.trim().startsWith("filename")) {
+                return content.substring(content.indexOf('=')+1).trim().replace("\"", "");
+            }
+        }
+        return null;
+    }
+    
+    
+    
 
 }

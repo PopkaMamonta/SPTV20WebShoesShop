@@ -19,13 +19,15 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeAddModel eq true}">active</c:if>' aria-current="page" href="addModel">Добавить обувь</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowTakeOnModel eq true}">active</c:if>' aria-current="page" href="showTakeOnModel">Каталог</a> </li>
-                <li class="nav-item"> <a class='nav-link <c:if test="${activeAdminPanel eq true}">active</c:if>' aria-current="page" href="adminPanel">Админская панель</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeAdminPanel eq true}">active</c:if>' aria-current="page" href="adminPanel">Изменение ролей</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowUploadCover eq true}">active</c:if>' aria-current="page" href="showUploadCover">Загрузить обложку</a> </li>
             </ul>
           </c:when>
           <c:when test="${topRole eq 'MANAGER'}">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeAddModel eq true}">active</c:if>' aria-current="page" href="addModel">Добавить обувь</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowTakeOnModel eq true}">active</c:if>' aria-current="page" href="showTakeOnModel">Каталог</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowUploadCover eq true}">active</c:if>' aria-current="page" href="showUploadCover">Загрузить обложку</a> </li>
             </ul>
           </c:when>
           <c:when test="${topRole eq 'USER'}">

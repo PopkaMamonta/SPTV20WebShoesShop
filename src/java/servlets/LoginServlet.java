@@ -132,7 +132,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("authPerson",authPerson);
                 String topRoleAuthPerson=rolePersonFacade.getTopRole(authPerson);
                 session.setAttribute("topRole", topRoleAuthPerson);
-                request.setAttribute("info","Здраствуйте"+ authPerson.getUser().getName());
+                request.setAttribute("info","Здраствуйте "+ authPerson.getUser().getName());
                 request.getRequestDispatcher("/listShoes").forward(request, response);
                 break;
             case "/logout":
@@ -151,7 +151,7 @@ public class LoginServlet extends HttpServlet {
                     CoverModel coverModel = coverModelFacade.findCoverByModel(m);
                     mapModels.put(m, coverModel.getCover());
                 }
-                request.setAttribute("mapBooks", mapModels);
+                request.setAttribute("mapModels", mapModels);
                 request.setAttribute("activeListShoes", true);
                 request.getRequestDispatcher("/listShoes.jsp").forward(request, response);
                 break;
@@ -205,8 +205,8 @@ public class LoginServlet extends HttpServlet {
                 person.setUser(user);
                 personFacade.create(person);
                 
-                Role readerRole = roleFacade.findByRoleName("USER");
-                if(readerRole == null){
+                Role userRole = roleFacade.findByRoleName("USER");
+                if(userRole == null){
                     request.setAttribute("firstname", firstname);
                     request.setAttribute("lastname", lastname);
                     request.setAttribute("phone", phone);
@@ -216,7 +216,7 @@ public class LoginServlet extends HttpServlet {
                     break;
                 }
                 RolePerson rolePerson = new RolePerson();
-                rolePerson.setRole(readerRole);
+                rolePerson.setRole(userRole);
                 rolePerson.setPerson(person);
                 rolePersonFacade.create(rolePerson);
                 request.setAttribute("info", "Добавлен новый пользователь");

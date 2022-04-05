@@ -5,16 +5,22 @@
  */
 package servlets;
 
+import entity.Cover;
+import entity.CoverModel;
 import entity.History;
 import entity.Model;
 import entity.Person;
 import entity.User;
+import facade.CoverModelFacade;
 import facade.HistoryFacade;
 import facade.ModelFacade;
 import facade.RolePersonFacade;
 import facade.UserFacade;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,6 +42,7 @@ public class UserServlet extends HttpServlet {
     @EJB private ModelFacade modelFacade;
     @EJB private HistoryFacade historyFacade;
     @EJB private RolePersonFacade rolePersonFacade;
+    @EJB private CoverModelFacade coverModelFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -67,8 +74,15 @@ public class UserServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/showTakeOnModel":
+                Map<Model,Cover> mapModels = new HashMap<>();
+                List<Model> models = modelFacade.findAll();
+                for(Model m : models){
+                    CoverModel coverModel = coverModelFacade.findCoverByModel(m);
+                    mapModels.put(m, coverModel.getCover());
+                }
+                request.setAttribute("mapModels", mapModels);
                 request.setAttribute("activeShowTakeOnModel", true);
-                request.getRequestDispatcher("/WEB-INF/showTakeOnModel.jsp").forward(request, response);
+                request.getRequestDispatcher("/showTakeOnModel.jsp").forward(request, response);
                 break;
             case "/takeOnModel":
                 String modelId = request.getParameter("modelId");

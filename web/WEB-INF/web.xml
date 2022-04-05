@@ -17,9 +17,10 @@
             <url-pattern>/WEB-INF/addModel.jsp</url-pattern>
             <url-pattern>/WEB-INF/showTakeOnModel.jsp</url-pattern>
             <url-pattern>/showRegistration.jsp</url-pattern>
+            <url-pattern>/WEB-INF/showUploadCover.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
             <include-prelude>/WEB-INF/jspf/header.jspf</include-prelude>
             <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>
-        </jsp-property-group>
+        </jsp-property-group>    
     </jsp-config>
 </web-app>

@@ -81,9 +81,9 @@ public class RolePersonFacade extends AbstractFacade<RolePerson> {
             this.create(rolePerson);
         }
         if("MANAGER".equals(role.getRoleName())){
-            Role roleREADER = roleFacade.findByRoleName("USER");
+            Role roleUSER = roleFacade.findByRoleName("USER");
             rolePerson = new RolePerson();
-            rolePerson.setRole(roleREADER);
+            rolePerson.setRole(roleUSER);
             rolePerson.setPerson(person);
             this.create(rolePerson);
             Role roleMANAGER = roleFacade.findByRoleName("MANAGER");
@@ -93,9 +93,9 @@ public class RolePersonFacade extends AbstractFacade<RolePerson> {
             this.create(rolePerson);
         }
         if("READER".equals(role.getRoleName())){
-            Role roleREADER = roleFacade.findByRoleName("USER");
+            Role roleUSER = roleFacade.findByRoleName("USER");
             rolePerson = new RolePerson();
-            rolePerson.setRole(roleREADER);
+            rolePerson.setRole(roleUSER);
             rolePerson.setPerson(person);
             this.create(rolePerson);
         }
