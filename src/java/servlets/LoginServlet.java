@@ -120,6 +120,7 @@ public class LoginServlet extends HttpServlet {
                 if(authPerson==null){
                 request.setAttribute("info", "Неверный логин или пароль");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
+                break;
                 }
                 PasswordProtected pp=new PasswordProtected();
                 String salt=authPerson.getSalt();
@@ -127,6 +128,7 @@ public class LoginServlet extends HttpServlet {
                 if(!sequrePassword.equals(authPerson.getPassword())){
                 request.setAttribute("info", "Неверный логин или пароль");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
+                break;
                 }
                 HttpSession session=request.getSession(true);
                 session.setAttribute("authPerson",authPerson);
@@ -164,6 +166,7 @@ public class LoginServlet extends HttpServlet {
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
                 login = request.getParameter("login");
+                String money=request.getParameter("money");
                 String password1 = request.getParameter("password1");
                 String password2 = request.getParameter("password2");
                 if(!password1.equals(password2)){
@@ -171,6 +174,7 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("lastname", lastname);
                     request.setAttribute("phone", phone);
                     request.setAttribute("login", login);
+                    request.setAttribute("money", money);
                     request.setAttribute("info", "Не совпадают пароли");
                     request.getRequestDispatcher("/showRegistration").forward(request, response);
                     break;
@@ -186,7 +190,8 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("lastname", lastname);
                     request.setAttribute("phone", phone);
                     request.setAttribute("login", login);
-                    request.setAttribute("info", "Заполните все поля");
+                    request.setAttribute("money", money);
+                    request.setAttribute("info", "Заполните все поля ( Количество денег не обязательно )");
                     request.getRequestDispatcher("/showRegistration").forward(request, response);
                     break;
                 }
@@ -194,6 +199,18 @@ public class LoginServlet extends HttpServlet {
                 user.setName(firstname);
                 user.setSurname(lastname);
                 user.setTel(phone);
+                try {
+                    user.setAmountMoney(Integer.parseInt(money));
+                } catch (Exception e) {
+                    request.setAttribute("firstname", firstname);
+                    request.setAttribute("lastname", lastname);
+                    request.setAttribute("phone", phone);
+                    request.setAttribute("login", login);
+                    request.setAttribute("money", money);
+                    request.setAttribute("info", "Количество денег - пишите цифрами!");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
                 userFacade.create(user);
                 Person person = new Person();
                 person.setLogin(login);
@@ -211,6 +228,7 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("lastname", lastname);
                     request.setAttribute("phone", phone);
                     request.setAttribute("login", login);
+                    request.setAttribute("money", money);
                     request.setAttribute("info", "Не найдена роль!");
                     request.getRequestDispatcher("/showRegistration").forward(request, response);
                     break;
@@ -221,7 +239,7 @@ public class LoginServlet extends HttpServlet {
                 rolePersonFacade.create(rolePerson);
                 request.setAttribute("info", "Добавлен новый пользователь");
                 request.getRequestDispatcher("/listShoes").forward(request, response);
-                break;      
+                break;
         }
         
     }

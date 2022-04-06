@@ -1,3 +1,8 @@
+<%-- 
+    Document   : showEditShoes
+    Created on : 06.04.2022, 23:40:58
+    Author     : angel
+--%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <h1 class="w-100 text-center my-5">Список обуви</h1>
@@ -11,7 +16,7 @@
         <p class="card-text">Количество: ${entry.key.quantity}</p>
         <p class="card-text">Размер: ${entry.key.size}</p>
         <p class="card-text">Цена: ${entry.key.price}</p>
-        <p class="card-text"><a href="takeOnModel?modelId=${entry.key.id}">Купить</a></p>
+        <p class="card-text"><a href="showEditShoes?modelId=${entry.key.id}">Редактировать</a></p>
       </div>
     </div>
   </c:forEach>

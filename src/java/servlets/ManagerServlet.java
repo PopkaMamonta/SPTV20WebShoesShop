@@ -7,18 +7,27 @@ package servlets;
 
 import entity.Cover;
 import entity.CoverModel;
+import entity.History;
 import entity.Model;
 import entity.Person;
+import entity.User;
 import facade.CoverFacade;
 import facade.CoverModelFacade;
+import facade.HistoryFacade;
 import facade.ModelFacade;
+import facade.PersonFacade;
 import facade.RolePersonFacade;
+import facade.UserFacade;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -37,10 +46,15 @@ import javax.servlet.http.Part;
     "/addModel",
     "/createModel",
     "/showUploadCover",
-    "/uploadCover"
+    "/uploadCover",
+    "/listUsers",
+    "/showIncome"
 })
 @MultipartConfig
 public class ManagerServlet extends HttpServlet {
+    @EJB private HistoryFacade historyFacade;
+    @EJB private UserFacade userFacade;
+    @EJB private PersonFacade personFacade;
     @EJB private CoverModelFacade coverModelFacade;
     @EJB private ModelFacade modelFacade;
     @EJB private RolePersonFacade rolePersonFacade;
@@ -150,11 +164,33 @@ public class ManagerServlet extends HttpServlet {
                 request.setAttribute("info", "Файл успешно загружен");
                 request.getRequestDispatcher("/addModel").forward(request, response);  
                 } catch (Exception e) {
-                request.setAttribute("info", "Файл гандон");
+                request.setAttribute("info", "Ошибка! Не удалось загрузить файл");
                 request.getRequestDispatcher("/showUploadCover").forward(request, response);  
                 }
                 break;
-           
+            case "/listUsers":
+                Map<Person,String> mapPersons = new HashMap<>();
+                List<Person> persons = personFacade.findAll();
+                for(Person p : persons){
+                    String topRole = rolePersonFacade.getTopRole(p);
+                    mapPersons.put(p, topRole);
+                }
+                List<User> users = userFacade.findAll();
+                request.setAttribute("users",users);
+                request.setAttribute("mapPersons", mapPersons);
+                request.setAttribute("activeListUsers", true);
+                request.getRequestDispatcher("/WEB-INF/listUsers.jsp").forward(request, response);
+                break;
+            case "/showIncome":
+                request.setAttribute("activeShowIncome", true);
+                int income=0;
+                List<History> incomeModel= historyFacade.findAll();
+                for (int i = 0; i < incomeModel.size(); i++) {
+                income+=incomeModel.get(i).getModel().getPrice();
+                }
+                request.setAttribute("income", income);
+                request.getRequestDispatcher("/WEB-INF/showIncome.jsp").forward(request,response);
+                break;
         }
     }
 
@@ -205,6 +241,17 @@ public class ManagerServlet extends HttpServlet {
             }
         }
         return null;
+    }
+        private boolean summator(Date date, int chosenMonth,int years) {
+        Calendar cal=Calendar.getInstance();
+        cal.setTime(date);
+        int month=cal.get(Calendar.MONTH);
+        int year=cal.get(Calendar.YEAR);
+        if (month==chosenMonth & year==years) {
+            return true;
+        }else{
+            return false;
+        }
     }
     
     

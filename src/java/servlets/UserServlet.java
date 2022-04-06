@@ -14,6 +14,7 @@ import entity.User;
 import facade.CoverModelFacade;
 import facade.HistoryFacade;
 import facade.ModelFacade;
+import facade.PersonFacade;
 import facade.RolePersonFacade;
 import facade.UserFacade;
 import java.io.IOException;
@@ -35,9 +36,11 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(name = "UserServlet", urlPatterns = {
     "/showTakeOnModel",
-    "/takeOnModel"
+    "/takeOnModel",
+    "/showEditMe"
 })
 public class UserServlet extends HttpServlet {
+    @EJB private PersonFacade personFacade;
     @EJB private UserFacade userFacade;
     @EJB private ModelFacade modelFacade;
     @EJB private HistoryFacade historyFacade;
@@ -74,20 +77,22 @@ public class UserServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/showTakeOnModel":
-                Map<Model,Cover> mapModels = new HashMap<>();
+                request.setAttribute("activeShowTakeOnModel", true);
                 List<Model> models = modelFacade.findAll();
+                Map<Model,Cover> mapModels = new HashMap<>();
                 for(Model m : models){
                     CoverModel coverModel = coverModelFacade.findCoverByModel(m);
                     mapModels.put(m, coverModel.getCover());
                 }
                 request.setAttribute("mapModels", mapModels);
-                request.setAttribute("activeShowTakeOnModel", true);
-                request.getRequestDispatcher("/showTakeOnModel.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/showTakeOnModel.jsp").forward(request, response);
                 break;
             case "/takeOnModel":
                 String modelId = request.getParameter("modelId");
                 Model selectedModel = modelFacade.find(Long.parseLong(modelId));
                 selectedModel.setQuantity(selectedModel.getQuantity()-1);
+                authPerson.getUser().setAmountMoney(authPerson.getUser().getAmountMoney()-selectedModel.getPrice());
+                userFacade.edit(authPerson.getUser());
                 modelFacade.edit(selectedModel);
                 History history = new History();
                 history.setModel(selectedModel);
@@ -97,6 +102,19 @@ public class UserServlet extends HttpServlet {
                 historyFacade.create(history);
                 request.setAttribute("info", "Покупка произведена");
                 request.getRequestDispatcher("/showTakeOnModel").forward(request, response);
+                break;
+            case "/showEditMe":
+                request.setAttribute("activeShowEditMe", true);
+                Person person=personFacade.find(authPerson.getId());
+                request.setAttribute("login2", person.getLogin());
+                request.setAttribute("password2",person.getPassword());
+                request.setAttribute("name2", person.getUser().getName());
+                request.setAttribute("surname2", person.getUser().getSurname());
+                request.setAttribute("tel2", person.getUser().getTel());
+                request.setAttribute("money2", person.getUser().getAmountMoney());
+                request.setAttribute("salt", person.getSalt());
+                request.setAttribute("id", person.getId());
+                request.getRequestDispatcher("/WEB-INF/showEditMe.jsp").forward(request, response);
                 break;
         }
     }

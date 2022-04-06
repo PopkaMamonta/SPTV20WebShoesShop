@@ -29,6 +29,10 @@
                 <input type="text" class="form-control"  name="login" id="login" placeholder="">
             </div>
             <div class="mb-3">
+                <label for="money" class="form-label">Количество денег: </label>
+                <input type="text" class="form-control"  name="money" id="money" placeholder="">
+            </div>
+            <div class="mb-3">
                 <label for="password1" class="form-label">Пароль:</label>
                 <input type="text" class="form-control"  name="password1" id="password1" placeholder="">
             </div>

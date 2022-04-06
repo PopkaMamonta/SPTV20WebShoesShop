@@ -5,8 +5,14 @@
  */
 package servlets;
 
+import entity.Cover;
+import entity.CoverModel;
+import entity.Model;
 import entity.Person;
 import entity.Role;
+import facade.CoverFacade;
+import facade.CoverModelFacade;
+import facade.ModelFacade;
 import facade.PersonFacade;
 import facade.RoleFacade;
 import facade.RolePersonFacade;
@@ -28,10 +34,16 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(name = "AdminServlet", urlPatterns = {
     "/adminPanel",
-    "/changeRole"
+    "/changeRole",
+    "/showEditShoesList",
+    "/showEditShoes",
+    "/editModel"
 })
 public class AdminServlet extends HttpServlet {
     @EJB private RolePersonFacade rolePersonFacade;
+    @EJB private CoverFacade coverFacade;
+    @EJB private CoverModelFacade coverModelFacade;
+    @EJB private ModelFacade modelFacade;
     @EJB private RoleFacade roleFacade;
     @EJB private PersonFacade personFacade;
     /**
@@ -86,7 +98,52 @@ public class AdminServlet extends HttpServlet {
                 request.setAttribute("info", "Роль изменена");
                 request.getRequestDispatcher("/adminPanel").forward(request, response);
                 break;
-        }
+            case "/showEditShoesList":
+                request.setAttribute("activeShowEditShoesList", true);
+                List<Model> models = modelFacade.findAll();
+                Map<Model,Cover> mapModels = new HashMap<>();
+                for(Model m : models){
+                    CoverModel coverModel = coverModelFacade.findCoverByModel(m);
+                    mapModels.put(m, coverModel.getCover());
+                }
+                request.setAttribute("mapModels", mapModels);
+                request.getRequestDispatcher("/WEB-INF/showEditShoesList.jsp").forward(request, response);
+                break;
+            case "/showEditShoes":
+                Model model=modelFacade.find(Long.parseLong(request.getParameter("modelId")));
+                List<Cover> cover=coverFacade.findAll();
+                request.setAttribute("covers2", cover);
+                request.setAttribute("model2", model.getName());
+                request.setAttribute("brand2", model.getBrand());
+                request.setAttribute("size2", model.getSize());
+                request.setAttribute("quantity2", model.getQuantity());
+                request.setAttribute("price2", model.getPrice());
+                request.setAttribute("id", model.getId());
+                request.getRequestDispatcher("/WEB-INF/showEditShoes.jsp").forward(request, response);
+                break;
+            case "/editModel":
+                String model2=request.getParameter("model2");
+                String brand2=request.getParameter("brand2");
+                String size2=request.getParameter("size2");
+                String price2=request.getParameter("price2");
+                String covers2=request.getParameter("coverId2");
+                String quantity2=request.getParameter("quantity2");
+                String id=request.getParameter("id");
+                model = modelFacade.find(Long.parseLong(id));
+                model.setBrand(brand2);
+                model.setName(model2);
+                model.setPrice(Integer.parseInt(price2));
+                model.setSize(Integer.parseInt(size2));
+                model.setQuantity(Integer.parseInt(quantity2));
+                CoverModel coverModel=coverModelFacade.findCoverByModel(model);
+                Cover cov=coverFacade.find(Long.parseLong(covers2));
+                coverModel.setCover(cov);
+                modelFacade.edit(model);
+                coverModelFacade.edit(coverModel);
+                request.setAttribute("info", "Данные изменены и сохранены!");
+                request.getRequestDispatcher("/showEditShoesList").forward(request, response);
+                break;
+        }       
     }
 
 

@@ -21,6 +21,10 @@
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowTakeOnModel eq true}">active</c:if>' aria-current="page" href="showTakeOnModel">Каталог</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeAdminPanel eq true}">active</c:if>' aria-current="page" href="adminPanel">Изменение ролей</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowUploadCover eq true}">active</c:if>' aria-current="page" href="showUploadCover">Загрузить обложку</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeListUsers eq true}">active</c:if>' aria-current="page" href="listUsers">Список пользователeй</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowIncome eq true}">active</c:if>' aria-current="page" href="showIncome">Доход</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowEditShoesList eq true}">active</c:if>' aria-current="page" href="showEditShoesList">Изменение обуви</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowEditMe eq true}">active</c:if>' aria-current="page" href="showEditMe">Редактировать свои данные</a> </li>
             </ul>
           </c:when>
           <c:when test="${topRole eq 'MANAGER'}">
@@ -28,11 +32,15 @@
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeAddModel eq true}">active</c:if>' aria-current="page" href="addModel">Добавить обувь</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowTakeOnModel eq true}">active</c:if>' aria-current="page" href="showTakeOnModel">Каталог</a> </li>
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowUploadCover eq true}">active</c:if>' aria-current="page" href="showUploadCover">Загрузить обложку</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeListUsers eq true}">active</c:if>' aria-current="page" href="listUsers">Список пользователeй</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowIncome eq true}">active</c:if>' aria-current="page" href="showIncome">Доход</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowEditMe eq true}">active</c:if>' aria-current="page" href="showEditMe">Редактировать свои данные</a> </li>
             </ul>
           </c:when>
           <c:when test="${topRole eq 'USER'}">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"> <a class='nav-link <c:if test="${activeShowTakeOnModel eq true}">active</c:if>' aria-current="page" href="showTakeOnModel">Каталог</a> </li>
+                <li class="nav-item"> <a class='nav-link <c:if test="${activeShowEditMe eq true}">active</c:if>' aria-current="page" href="showEditMe">Редактировать свои данные</a> </li>
             </ul>
           </c:when>
           <c:when test="${topRole eq NULL}">
@@ -57,8 +65,4 @@
       </ul>
     </div>
     
-    <form class="d-flex">
-      <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
 </nav>
