@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import tools.PasswordProtected;
 
 /**
  *
@@ -37,7 +38,10 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "UserServlet", urlPatterns = {
     "/showTakeOnModel",
     "/takeOnModel",
-    "/showEditMe"
+    "/showEditMe",
+    "/editMe",
+    "/showEditPassword",
+    "/editPassword"
 })
 public class UserServlet extends HttpServlet {
     @EJB private PersonFacade personFacade;
@@ -90,19 +94,21 @@ public class UserServlet extends HttpServlet {
             case "/takeOnModel":
                 String modelId = request.getParameter("modelId");
                 Model selectedModel = modelFacade.find(Long.parseLong(modelId));
-                selectedModel.setQuantity(selectedModel.getQuantity()-1);
-                authPerson.getUser().setAmountMoney(authPerson.getUser().getAmountMoney()-selectedModel.getPrice());
-                userFacade.edit(authPerson.getUser());
-                modelFacade.edit(selectedModel);
-                History history = new History();
-                history.setModel(selectedModel);
-                User user = userFacade.find(authPerson.getUser().getId());
-                history.setUser(user);
-                history.setPurchaseModel(Calendar.getInstance().getTime());
-                historyFacade.create(history);
-                request.setAttribute("info", "Покупка произведена");
-                request.getRequestDispatcher("/showTakeOnModel").forward(request, response);
-                break;
+                if(selectedModel.getQuantity()!=0 & authPerson.getUser().getAmountMoney()-selectedModel.getPrice()>0){
+                    selectedModel.setQuantity(selectedModel.getQuantity()-1);
+                    authPerson.getUser().setAmountMoney(authPerson.getUser().getAmountMoney()-selectedModel.getPrice());
+                    userFacade.edit(authPerson.getUser());
+                    modelFacade.edit(selectedModel);
+                    History history = new History();
+                    history.setModel(selectedModel);
+                    User user = userFacade.find(authPerson.getUser().getId());
+                    history.setUser(user);
+                    history.setPurchaseModel(Calendar.getInstance().getTime());
+                    historyFacade.create(history);
+                    request.setAttribute("info", "Покупка произведена");
+                    request.getRequestDispatcher("/showTakeOnModel").forward(request, response);
+                }
+                    break;
             case "/showEditMe":
                 request.setAttribute("activeShowEditMe", true);
                 Person person=personFacade.find(authPerson.getId());
@@ -115,6 +121,53 @@ public class UserServlet extends HttpServlet {
                 request.setAttribute("salt", person.getSalt());
                 request.setAttribute("id", person.getId());
                 request.getRequestDispatcher("/WEB-INF/showEditMe.jsp").forward(request, response);
+                break;
+            case "/editMe":
+                String login2=request.getParameter("login2");
+                String name2=request.getParameter("name2");
+                String surname2=request.getParameter("surname2");
+                String tel2=request.getParameter("tel2");
+                String money2=request.getParameter("money2");
+                String id=request.getParameter("id");
+                Person persons=personFacade.find(Long.parseLong(id));
+                User users=userFacade.find(Long.parseLong(id));
+                persons.setLogin(login2);
+                users.setName(name2);
+                users.setSurname(surname2);
+                users.setTel(tel2);
+                users.setAmountMoney(Integer.parseInt(money2));
+                personFacade.edit(persons);
+                userFacade.edit(users);
+                request.setAttribute("info", "Данные изменены и сохранены!");
+                request.getRequestDispatcher("/showEditMe").forward(request, response);
+                break;
+            case "/showEditPassword":
+                request.getRequestDispatcher("/WEB-INF/showEditPassword.jsp").forward(request, response);
+                break;
+            case "/editPassword":
+                String password1 = request.getParameter("password1");
+                String password2 = request.getParameter("password2");
+                if(!password1.equals(password2)){
+                    request.setAttribute("info", "Не совпадают пароли");
+                    request.getRequestDispatcher("/showEditPassword").forward(request, response);
+                    break;
+                }
+                if("".equals(password1)|| "".equals(password2)
+                        ){
+                    request.setAttribute("info", "Заполните все поля ");
+                    request.getRequestDispatcher("/showEditPassword").forward(request, response);
+                    break;
+                }
+                PasswordProtected pp = new PasswordProtected();
+                Long id2=authPerson.getId();
+                Person perso=personFacade.find(id2);
+                String salt = pp.getSalt();
+                perso.setSalt(salt);
+                String sequrePassword = pp.passwordEncript(password1, salt);
+                perso.setPassword(sequrePassword);
+                personFacade.edit(perso);
+                request.setAttribute("info", "Данные изменены и сохранены!");
+                request.getRequestDispatcher("/showEditMe").forward(request, response);
                 break;
         }
     }

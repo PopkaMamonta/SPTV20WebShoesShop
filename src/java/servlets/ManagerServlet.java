@@ -48,7 +48,8 @@ import javax.servlet.http.Part;
     "/showUploadCover",
     "/uploadCover",
     "/listUsers",
-    "/showIncome"
+    "/showIncome",
+    "/incomePerMonth"
 })
 @MultipartConfig
 public class ManagerServlet extends HttpServlet {
@@ -190,6 +191,20 @@ public class ManagerServlet extends HttpServlet {
                 }
                 request.setAttribute("income", income);
                 request.getRequestDispatcher("/WEB-INF/showIncome.jsp").forward(request,response);
+                break;
+            case "/incomePerMonth":
+                int incomePerMonth=0;
+                String chosenMonth=request.getParameter("chosenMonth");
+                List<History> history= historyFacade.findAll();
+                for (int i = 0; i < history.size(); i++) {
+                    Date date=history.get(i).getPurchaseModel();
+                    boolean toSum= summator(date,Integer.parseInt(chosenMonth)-1,2022);
+                    if (history.get(i)!=null & toSum){
+                        incomePerMonth+=history.get(i).getModel().getPrice();
+                    }
+                }
+                request.setAttribute("incomePerMonth", incomePerMonth);
+                request.getRequestDispatcher("/WEB-INF/showIncomePerMonth.jsp").forward(request,response);
                 break;
         }
     }

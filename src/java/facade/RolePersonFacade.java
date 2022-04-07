@@ -92,7 +92,7 @@ public class RolePersonFacade extends AbstractFacade<RolePerson> {
             rolePerson.setPerson(person);
             this.create(rolePerson);
         }
-        if("READER".equals(role.getRoleName())){
+        if("USER".equals(role.getRoleName())){
             Role roleUSER = roleFacade.findByRoleName("USER");
             rolePerson = new RolePerson();
             rolePerson.setRole(roleUSER);

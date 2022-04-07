@@ -15,11 +15,7 @@
                 <input type="text" name="login2" value="${login2}" class="text-muted mb-0">
               </div>
               <div class="mb-3">
-                <label>Пароль</label>
-                <input type="text" name="password2" value="${password2}" class="text-muted mb-0">
-              </div>
-              <div class="mb-3">
-                <label>имя</label>
+                <label>Имя</label>
                 <input type="text" name="name2" value="${name2}" class="text-muted mb-0">
               </div>
               <div class="mb-3">
@@ -37,6 +33,8 @@
               <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Сохранить изменения</button>
               </div>
+                <h4 class="w-100 mt-3 text-center"><a href="showEditPassword">Изменить пароль</a></h4>
             </form>
     </div>
 </div>
+              
