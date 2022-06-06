@@ -10,6 +10,7 @@ import entity.CoverModel;
 import entity.Model;
 import entity.Person;
 import entity.Role;
+import entity.User;
 import facade.CoverFacade;
 import facade.CoverModelFacade;
 import facade.ModelFacade;
@@ -17,6 +18,7 @@ import facade.PersonFacade;
 import facade.RoleFacade;
 import facade.RolePersonFacade;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +94,12 @@ public class AdminServlet extends HttpServlet {
             case "/changeRole":
                 String personId = request.getParameter("personId");
                 String roleId = request.getParameter("roleId");
+                Person person = personFacade.find(Long.parseLong(personId));
+                    if("admin".equals(person.getLogin())){
+                            request.setAttribute("info", "Вы не можете изменить роль этому пользователю");
+                            request.getRequestDispatcher("/adminPanel").forward(request, response);
+                        break;
+                    }
                 Person p = personFacade.find(Long.parseLong(personId));
                 Role r = roleFacade.find(Long.parseLong(roleId));
                 rolePersonFacade.setRoleToUser(r,p);

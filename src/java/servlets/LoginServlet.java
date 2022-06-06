@@ -58,9 +58,9 @@ public class LoginServlet extends HttpServlet {
         super.init();
         if(personFacade.count()!=0)return;
         User user=new User();
-        user.setName("Повелитель");
-        user.setSurname("Величайший");
-        user.setTel("+3256843420");
+        user.setName("Daniil");
+        user.setSurname("Mozgov");
+        user.setTel("24812874208");
         user.setAmountMoney(9999999);
         userFacade.create(user);
         Person person=new Person();
